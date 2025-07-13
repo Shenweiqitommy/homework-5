@@ -12,7 +12,7 @@ public class LoginInteractor implements LoginInputBoundary {
     public LoginInteractor(LoginUserDataAccessInterface loginInputDataAccessInterface,
                            LoginOutputBoundary loginOutputBoundary) {
         this.userDataAccessObject = loginInputDataAccessInterface;
-        this.loginPresenter       = loginOutputBoundary;
+        this.loginPresenter = loginOutputBoundary;
     }
 
     @Override
@@ -22,11 +22,13 @@ public class LoginInteractor implements LoginInputBoundary {
 
         if (!userDataAccessObject.existsByName(username)) {
             loginPresenter.prepareFailView(username + ": Account does not exist.");
-        } else {
+        }
+        else {
             final String pwd = userDataAccessObject.get(username).getPassword();
             if (!password.equals(pwd)) {
                 loginPresenter.prepareFailView("Incorrect password for \"" + username + "\".");
-            } else {
+            }
+            else {
                 // fetch the full User entity
                 final User user = userDataAccessObject.get(username);
 

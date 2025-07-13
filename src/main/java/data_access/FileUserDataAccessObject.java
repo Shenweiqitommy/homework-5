@@ -31,6 +31,10 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
     /**
      * Constructs the DAO, creating the file if empty, or loading existing users.
+     * @param csvPath 234246
+     * @param userFactory  1256
+     * @throws IOException 1343674
+     * @throws RuntimeException 12345465876
      */
     public FileUserDataAccessObject(String csvPath, UserFactory userFactory) throws IOException {
         this.csvFile = new File(csvPath);
@@ -38,8 +42,9 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         headers.put("password", 1);
 
         if (csvFile.length() == 0) {
-            save();  // writes header line
-        } else {
+            save();
+        }
+        else {
             try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
                 final String headerLine = reader.readLine();
                 if (!HEADER.equals(headerLine)) {
@@ -48,9 +53,9 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                 }
                 String row;
                 while ((row = reader.readLine()) != null) {
-                    String[] cols = row.split(",");
-                    String name = cols[headers.get("username")];
-                    String pwd  = cols[headers.get("password")];
+                    final String[] cols = row.split(",");
+                    final String name = cols[headers.get("username")];
+                    final String pwd = cols[headers.get("password")];
                     accounts.put(name, userFactory.create(name, pwd));
                 }
             }
@@ -59,6 +64,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
     /**
      * Writes the in-memory accounts map back to the CSV file.
+     * @throws RuntimeException 234657
      */
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
@@ -70,7 +76,8 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                 writer.write(String.format("%s,%s", user.getName(), user.getPassword()));
                 writer.newLine();
             }
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new RuntimeException("Failed to save user accounts", ex);
         }
     }
