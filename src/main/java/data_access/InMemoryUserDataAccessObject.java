@@ -4,25 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 import entity.User;
-import use_case.change_password.ChangePasswordUserDataAccessInterface;
-import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.login.LoginUserDataAccessInterface;
+import use_case.change_password.ChangePasswordUserDataAccessInterface;
 
 /**
- * In-memory implementation of the DAO for storing user data. This implementation does
- * NOT persist data between runs of the program.
+ * In‐memory DAO for user data.
+ * Supports signup, login, change‐password, and tracks the last‐logged‐in user.
  */
-public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
-                                                     LoginUserDataAccessInterface,
-                                                     ChangePasswordUserDataAccessInterface {
+public class InMemoryUserDataAccessObject
+        implements SignupUserDataAccessInterface,
+        LoginUserDataAccessInterface,
+        ChangePasswordUserDataAccessInterface {
 
+    /** All registered users, keyed by username. */
     private final Map<String, User> users = new HashMap<>();
 
+    /** The username most recently recorded via setCurrentUser(). */
     private String currentUser;
 
+    // ─── SignupUserDataAccessInterface ────────────────────────────────────────
     @Override
-    public boolean existsByName(String identifier) {
-        return users.containsKey(identifier);
+    public boolean existsByName(String username) {
+        return users.containsKey(username);
     }
 
     @Override
@@ -30,15 +34,32 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
         users.put(user.getName(), user);
     }
 
+    // ─── LoginUserDataAccessInterface ─────────────────────────────────────────
     @Override
     public User get(String username) {
         return users.get(username);
     }
 
+    /**
+     * Record that the given username has just logged in.
+     */
     @Override
-    public void changePassword(User user) {
-        // Replace the old entry with the new password
-        users.put(user.getName(), user);
+    public void setCurrentUser(String username) {
+        this.currentUser = username;
     }
 
+    /**
+     * Return the last username passed to setCurrentUser(), or null if none.
+     */
+    @Override
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    // ─── ChangePasswordUserDataAccessInterface ────────────────────────────────
+    @Override
+    public void changePassword(User user) {
+        // overwrite existing entry with new password
+        users.put(user.getName(), user);
+    }
 }
